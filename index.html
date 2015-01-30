@@ -1,0 +1,92 @@
+<!-- doctype html -->
+<html>
+  <head>
+    <title>Aphex Faces</title>
+    <style>
+      body { margin: 0; border: 0; padding: 0; overflow: hidden; }
+      #content { overflow: hidden; width: 110%; width: calc(100% + 133px); }
+      .pic { float: left; height: 100px; width: 133px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      function minipops(d) { 
+        var pics = d.photos,
+          $content = $('#content'),
+          ViewPortHeight = window.innerHeight
+
+          
+        ;(function next(i) {
+          var idx = ~~(Math.random()*pics.length-1),
+            DOMStr = '<img src="' + pics[idx].url + '" class="pic" />'
+          $content.append(DOMStr)
+
+          if ($content.height() - ViewPortHeight < 101 && i < 500) {
+            setTimeout(next(i+1), 1)
+          }
+        })(0)
+      }
+
+      $(function() {
+          var spanded = null
+
+          $('#content').on('click', '.pic', function(e) {
+            if (spanded !== null) {
+              var $c = spanded.data('clone'),
+                anmTgt = spanded.offset(),
+                trappedSpanded = spanded
+
+              anmTgt.width = '133px'
+              anmTgt.height = '100px'
+
+              $c.animate(anmTgt, function() {
+                trappedSpanded.css('visibility', '')
+                $c.remove()
+              })
+            }
+
+            spanded = $(this)
+
+            var $el = $(this),
+                nW = 640,
+                nH = 480,
+                cX = window.innerWidth / 2,
+                cY = window.innerHeight / 2,
+                elPos = $el.offset(),
+                tCX = $el.width()/2 + elPos.left,
+                tCY = $el.height()/2 + elPos.top,
+                oCY = cY + (cY - tCY),
+                oCX = cX + (cX - tCX),
+                anmTgt = {
+                  left: oCX - nW/2,
+                  top: oCY - nH/2,
+                  width: nW,
+                  height: nH
+                }
+
+            var $clone = $el.clone()
+              .css({
+                position: 'absolute',
+                top: elPos.top + 'px',
+                left: elPos.left + 'px',
+                zIndex: 2
+              })
+              .appendTo('body')
+              .animate(anmTgt)
+
+            $el.data('clone', $clone)
+               .css('visibility', 'hidden')
+          })
+
+        var url = 'http://afxpix.pitchfork.com/minipops.json'
+
+        $('<script>').attr('type', 'text/javascript')
+                     .attr('src', url)
+                     .appendTo('body')
+      })
+    </script>
+  </body>
+</html>
